@@ -6,13 +6,14 @@ dotenv.config();
 
 const getAuthDataSource = () => {
   [
+    process.env.DB_HOST,
     process.env.DB_PORT,
-    process.env.DB_USERNAME,
-    process.env.DB_PASSWORD,
     process.env.DB_DATABASE,
+    process.env.DB_USERNAME,
+    process.env.DB_PASSWORD_FILE,
   ].forEach((val) => {
     if (!val) {
-      throw new Error("Required env missing.");
+      throw new Error('Required env missing.');
     }
   });
   return new DataSource({

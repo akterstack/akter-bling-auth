@@ -4,5 +4,6 @@ docker/
 node_modules/
 secrets/
 !secrets/*_sample
+!secrets/README.md
 
 .env
