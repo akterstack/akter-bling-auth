@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 import { DataSource } from "typeorm";
+import { readDockerSecret } from "./utils/helper";
 
 dotenv.config();
 
@@ -18,9 +19,11 @@ const getAuthDataSource = () => {
     type: "mysql",
     host: process.env.DB_HOST || "127.0.0.1",
     port: Number(process.env.DB_PORT),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
+    username: process.env.DB_USERNAME,
+    password:
+      readDockerSecret(process.env.DB_PASSWORD_FILE || "") ||
+      process.env.DB_PASSWORD,
     logging: ["query"],
     synchronize: false,
     subscribers: [],

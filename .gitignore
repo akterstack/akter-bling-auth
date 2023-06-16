@@ -2,5 +2,7 @@
 build/
 docker/
 node_modules/
+secrets/
+!secrets/*_sample
 
 .env

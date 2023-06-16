@@ -1,8 +1,5 @@
 version: '3.8'
 
-networks:
-  akter-bling-auth:
-
 services:
   app:
     build:
@@ -15,7 +12,7 @@ services:
       DB_HOST: mysql
       DB_DATABASE: bling_auth
       DB_USERNAME: bling
-      DB_PASSWORD: /run/secrets/db_password
+      DB_PASSWORD_FILE: /run/secrets/db_password
     secrets:
       - db_password
     depends_on:
@@ -23,6 +20,8 @@ services:
     command: npm run dev
     ports:
       - "3000:3000"
+    expose:
+      - "3000"
     networks:
       - akter-bling-auth
 
@@ -45,9 +44,13 @@ services:
 
 secrets:
   db_password:
-    file: db_password.txt
+    file: secrets/db_password
   db_root_password:
-    file: db_root_password.txt
+    file: secrets/db_root_password
 
 volumes:
   db:
+
+networks:
+  akter-bling-auth:
+    driver: bridge
