@@ -4,6 +4,6 @@ export class HttpError extends Error {
     readonly errors: string[],
     readonly originalError?: Error
   ) {
-    super();
+    super(originalError?.message);
   }
 }
