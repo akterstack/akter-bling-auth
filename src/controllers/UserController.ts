@@ -13,6 +13,6 @@ export class UserController {
   async createUser(req: Request, res: Response, next: NextFunction) {
     const userInput = plainToInstance(UserCreateInput, req.body);
     await validate(userInput);
-    res.json(this.userService.createUser());
+    res.json(await this.userService.createUser(userInput));
   }
 }

@@ -1,6 +1,8 @@
 import * as dotenv from "dotenv";
-import { DataSource } from "typeorm";
-import { readDockerSecret } from "./utils/helper";
+import { DataSource } from 'typeorm';
+import { readDockerSecret } from './utils/helper';
+import Container from 'typedi';
+import { User } from './entities/User';
 
 dotenv.config();
 
@@ -17,18 +19,21 @@ const getAuthDataSource = () => {
     }
   });
   return new DataSource({
-    type: "mysql",
-    host: process.env.DB_HOST || "127.0.0.1",
+    type: 'mysql',
+    host: process.env.DB_HOST || '127.0.0.1',
     port: Number(process.env.DB_PORT),
     database: process.env.DB_DATABASE,
     username: process.env.DB_USERNAME,
     password:
-      readDockerSecret(process.env.DB_PASSWORD_FILE || "") ||
+      readDockerSecret(process.env.DB_PASSWORD_FILE || '') ||
       process.env.DB_PASSWORD,
-    logging: ["query"],
-    synchronize: false,
+    logging: ['query'],
+    synchronize: true,
     subscribers: [],
+    entities: [User],
   });
 };
 
 export const AuthDataSource = getAuthDataSource();
+
+Container.set('UserRepository', AuthDataSource.getRepository(User));

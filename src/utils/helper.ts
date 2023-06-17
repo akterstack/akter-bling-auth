@@ -16,7 +16,7 @@ export const readDockerSecret = (secretNameAndPath: string) => {
 
 export const validate = async (obj: object) => {
   const errors = await _validate(obj, { stopAtFirstError: true });
-  if (errors) {
+  if (errors && errors.length) {
     throw new HttpValidationError(errors);
   }
 };
