@@ -1,9 +1,10 @@
-import bodyParser from "body-parser";
-import cors from "cors";
-import express, { Express, NextFunction, Request, Response } from "express";
-import { notFoundHandler } from "./utils/middlewares";
-import Container from "typedi";
-import { UserController } from "./controllers/UserController";
+import Container from 'typedi';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import express, { Express } from 'express';
+import { notFoundHandler, serverErrorHandler } from './utils/middlewares';
+import { UserController } from './controllers/UserController';
+import { captureError } from './utils/helper';
 
 const userController = Container.get(UserController);
 
@@ -12,16 +13,13 @@ const app: Express = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post("/user", userController.createUser);
+app.post(
+  '/users',
+  captureError(userController.createUser.bind(userController))
+);
 
-app.all("*", notFoundHandler);
+app.all('*', notFoundHandler);
 
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  console.log(err);
-  return res.status(500).send({
-    success: false,
-    message: "500 | Internal server error",
-  });
-});
+app.use(serverErrorHandler);
 
 export default app;
