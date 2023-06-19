@@ -1,9 +1,10 @@
-import { Entity, Column } from "typeorm";
-import { AbstractEntity } from "./AbstractEntity";
-import { DBTables } from "../constants/DBTables";
+import { Entity, Column, JoinColumn, OneToOne } from 'typeorm';
+import { AbstractEntity } from './AbstractEntity';
+import { DBTables } from '../constants/DBTables';
+import { UserLogin } from './UserLogin';
 
 @Entity(DBTables.USERS)
-export class User extends AbstractEntity<Partial<User>> {
+export class User extends AbstractEntity<User> {
   @Column()
   firstName: string;
 
@@ -15,6 +16,10 @@ export class User extends AbstractEntity<Partial<User>> {
 
   @Column({ unique: true })
   phone: string;
+
+  @JoinColumn()
+  @OneToOne(() => UserLogin)
+  loginDetail: Promise<UserLogin>;
 
   toResponseObject(): Partial<User> {
     return {

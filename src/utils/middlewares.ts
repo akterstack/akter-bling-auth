@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpError } from '../errors/HttpError';
 import { QueryFailedError } from 'typeorm';
 import httpStatus from 'http-status';
 import { DuplicateEntryError } from '../errors/DuplicateEntryError';
+import { HttpValidationError } from '../errors/HttpValidationError';
 
 export const notFoundHandler = (req: Request, res: Response) => {
   return res.status(404).send({
@@ -20,7 +20,7 @@ export const serverErrorHandler = (
   next: NextFunction
 ) => {
   switch (err.constructor) {
-    case HttpError:
+    case HttpValidationError:
       return res.status(err.status).send({
         error: {
           type: err.constructor.name,

@@ -4,6 +4,7 @@ import {
   MaxLength,
   IsEmail,
   IsMobilePhone,
+  IsStrongPassword,
 } from 'class-validator';
 
 export class UserCreateInput {
@@ -24,4 +25,8 @@ export class UserCreateInput {
   @IsMobilePhone()
   @IsNotEmpty()
   phone: string;
+
+  @IsStrongPassword()
+  @IsNotEmpty()
+  password: string;
 }

@@ -1,6 +1,7 @@
+import fs from 'fs';
 import { validate as _validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
-import fs from 'fs';
+import bcrypt from 'bcrypt';
 import { HttpValidationError } from '../errors/HttpValidationError';
 
 export const readDockerSecret = (secretNameAndPath: string) => {
@@ -31,4 +32,8 @@ export const captureError = (
       next(e);
     }
   };
+};
+
+export const generatePasswordHash = (password: string) => {
+  return bcrypt.hash(password, 10);
 };

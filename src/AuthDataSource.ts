@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { readDockerSecret } from './utils/helper';
 import Container from 'typedi';
 import { User } from './entities/User';
+import { UserLogin } from './entities/UserLogin';
 
 dotenv.config();
 
@@ -30,7 +31,7 @@ const getAuthDataSource = () => {
     logging: ['query'],
     synchronize: true,
     subscribers: [],
-    entities: [User],
+    entities: [User, UserLogin],
   });
 };
 

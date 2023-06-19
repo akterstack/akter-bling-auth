@@ -3,6 +3,8 @@ import { Repository } from 'typeorm';
 import { User } from './../entities/User';
 import { UserCreateInput } from '../inputs/UserCreateInput';
 import { DuplicateEntryError } from '../errors/DuplicateEntryError';
+import { generatePasswordHash } from '../utils/helper';
+import { UserLogin } from '../entities/UserLogin';
 
 @Service()
 export class UserService {
@@ -27,6 +29,12 @@ export class UserService {
       );
     }
 
-    return this.userRepository.insert(userToCreate);
+    const userLogin = new UserLogin();
+    userLogin.username = userToCreate.email;
+    userLogin.password = await generatePasswordHash(userInput.password);
+
+    userToCreate.loginDetail = Promise.resolve(userLogin);
+
+    return this.userRepository.save(userToCreate);
   }
 }

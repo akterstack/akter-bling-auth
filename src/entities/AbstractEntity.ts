@@ -10,5 +10,5 @@ export abstract class AbstractEntity<T> {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  abstract toResponseObject(): T;
+  abstract toResponseObject(): Partial<T>;
 }
