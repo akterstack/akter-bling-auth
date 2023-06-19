@@ -37,3 +37,9 @@ export const captureError = (
 export const generatePasswordHash = (password: string) => {
   return bcrypt.hash(password, 10);
 };
+
+export const generateOTP = (length = 6) => {
+  return Math.random()
+    .toString()
+    .slice(2, length + 2); // Math.random() generate float number like 0.2345435xxxxxx
+};

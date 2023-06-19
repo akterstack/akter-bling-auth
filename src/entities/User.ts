@@ -14,8 +14,14 @@ export class User extends AbstractEntity<User> {
   @Column({ unique: true })
   email: string;
 
+  @Column()
+  isEmailVerified: boolean = false;
+
   @Column({ unique: true })
   phone: string;
+
+  @Column()
+  isPhoneVerified: boolean = false;
 
   @JoinColumn()
   @OneToOne(() => UserLogin)

@@ -1,14 +1,16 @@
 import { Inject, Service } from 'typedi';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { User } from './../entities/User';
 import { UserCreateInput } from '../inputs/UserCreateInput';
 import { DuplicateEntryError } from '../errors/DuplicateEntryError';
 import { generatePasswordHash } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
+import { UserOTP, UserOTPKind } from '../entities/UserOtp';
 
 @Service()
 export class UserService {
   constructor(
+    @Inject('AuthDataSource') private authDataSource: DataSource,
     @Inject('UserRepository') private userRepository: Repository<User>
   ) {}
 
@@ -35,6 +37,22 @@ export class UserService {
 
     userToCreate.loginDetail = Promise.resolve(userLogin);
 
-    return this.userRepository.save(userToCreate);
+    return this.authDataSource.manager.transaction(async (tx) => {
+      const user = await tx.save(userToCreate);
+      await tx.save(userLogin);
+
+      const emailVerificationOtp = new UserOTP(
+        user,
+        UserOTPKind.email_verification
+      );
+      await tx.save(emailVerificationOtp);
+
+      const phoneVerificationOtp = new UserOTP(
+        user,
+        UserOTPKind.phone_verification
+      );
+      await tx.save(phoneVerificationOtp);
+      return user;
+    });
   }
 }

@@ -4,6 +4,7 @@ import { readDockerSecret } from './utils/helper';
 import Container from 'typedi';
 import { User } from './entities/User';
 import { UserLogin } from './entities/UserLogin';
+import { UserOTP } from './entities/UserOtp';
 
 dotenv.config();
 
@@ -31,10 +32,11 @@ const getAuthDataSource = () => {
     logging: ['query'],
     synchronize: true,
     subscribers: [],
-    entities: [User, UserLogin],
+    entities: [User, UserLogin, UserOTP],
   });
 };
 
 export const AuthDataSource = getAuthDataSource();
 
+Container.set('AuthDataSource', AuthDataSource);
 Container.set('UserRepository', AuthDataSource.getRepository(User));
