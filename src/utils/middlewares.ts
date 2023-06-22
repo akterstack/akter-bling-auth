@@ -3,6 +3,7 @@ import { QueryFailedError } from 'typeorm';
 import httpStatus from 'http-status';
 import { DuplicateEntryError } from '../errors/DuplicateEntryError';
 import { HttpValidationError } from '../errors/HttpValidationError';
+import { getSessionIdSecret, verifyJwtToken } from './helper';
 
 export const notFoundHandler = (req: Request, res: Response) => {
   return res.status(404).send({
@@ -51,4 +52,27 @@ export const serverErrorHandler = (
         },
       });
   }
+};
+
+export const verifySessionId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token =
+    req.body.sessionId || req.query.sessionId || req.headers['x-session-id'];
+
+  if (!token) {
+    return res.status(403).send('Session ID is required for verification.');
+  }
+  try {
+    const decoded = await verifyJwtToken<{ username: string }>(
+      token,
+      getSessionIdSecret()
+    );
+    req.authCtx = { username: decoded.username };
+  } catch (err) {
+    return res.status(401).send('Invalid session.');
+  }
+  return next();
 };

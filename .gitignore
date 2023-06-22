@@ -2,7 +2,7 @@
 build/
 docker/
 node_modules/
-secrets/
+secrets/*
 !secrets/*_sample
 !secrets/README.md
 

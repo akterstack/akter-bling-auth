@@ -2,7 +2,11 @@ import Container from 'typedi';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Express } from 'express';
-import { notFoundHandler, serverErrorHandler } from './utils/middlewares';
+import {
+  notFoundHandler,
+  serverErrorHandler,
+  verifySessionId,
+} from './utils/middlewares';
 import { UserController } from './controllers/UserController';
 import { captureError } from './utils/helper';
 import { AuthController } from './controllers/AuthController';
@@ -22,12 +26,14 @@ app.post(
 
 app.patch(
   '/verify-email',
-  captureError(authController.verifyEmail.bind(authController))
+  verifySessionId,
+  captureError(userController.verifyEmail.bind(authController))
 );
 
 app.patch(
   '/verify-phone',
-  captureError(authController.verifyPhone.bind(authController))
+  verifySessionId,
+  captureError(userController.verifyPhone.bind(authController))
 );
 
 app.all('*', notFoundHandler);

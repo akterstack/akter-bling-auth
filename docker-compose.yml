@@ -15,15 +15,17 @@ services:
       DB_DATABASE: bling_auth
       DB_USERNAME: bling
       DB_PASSWORD_FILE: /run/secrets/db_password
+      SESSION_ID_SECRET: /run/secrets/jwt_session_secret
+      AUTH_TOKEN_SECRET: /run/secrets/jwt_auth_secret
     secrets:
       - db_password
+      - jwt_session_secret
+      - jwt_auth_secret
     depends_on:
       - mysql
     command: npm run dev
     ports:
       - "3000:3000"
-    expose:
-      - "3000"
     networks:
       - akter-bling-auth
 
@@ -49,6 +51,10 @@ secrets:
     file: secrets/db_password
   db_root_password:
     file: secrets/db_root_password
+  jwt_auth_secret:
+    file: secrets/jwt_auth_secret
+  jwt_session_secret:
+    file: secrets/jwt_session_secret
 
 volumes:
   db:

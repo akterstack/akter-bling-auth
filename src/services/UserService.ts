@@ -5,7 +5,7 @@ import { UserCreateInput } from '../inputs/UserCreateInput';
 import { DuplicateEntryError } from '../errors/DuplicateEntryError';
 import { generatePasswordHash } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
-import { UserOTP, UserOTPKind } from '../entities/UserOtp';
+import { UserOTP, UserOTPKind } from '../entities/UserOTP';
 import { AuthService } from './AuthService';
 
 @Service()

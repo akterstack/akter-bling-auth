@@ -1,4 +1,5 @@
 import fs from 'fs';
+import jwt from 'jsonwebtoken';
 import { validate as _validate } from 'class-validator';
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
@@ -42,4 +43,43 @@ export const generateOTP = (length = 6) => {
   return Math.random()
     .toString()
     .slice(2, length + 2); // Math.random() generate float number like 0.2345435xxxxxx
+};
+
+export const getSessionIdSecret = () => {
+  if (!process.env.SESSION_ID_SECRET) {
+    throw new Error(`SESSION_ID_SECRET env not found.`);
+  }
+  return process.env.SESSION_ID_SECRET || '';
+};
+
+export const getAuthTokenSecret = () => {
+  if (!process.env.AUTH_TOKEN_SECRET) {
+    throw new Error(`AUTH_TOKEN_SECRET env not found.`);
+  }
+  return process.env.AUTH_TOKEN_SECRET || '';
+};
+
+export const generateSessionId = (username: string) => {
+  return jwt.sign(
+    {
+      username,
+    },
+    getSessionIdSecret(),
+    { expiresIn: 3 * 60 }
+  );
+};
+
+export const verifyJwtToken = <T>(
+  token: string,
+  secret: string
+): Promise<T> => {
+  return new Promise((resolve, reject) =>
+    jwt.verify(token, secret, (err, decoded) =>
+      err
+        ? reject({
+            error: err,
+          })
+        : resolve(decoded as T)
+    )
+  );
 };

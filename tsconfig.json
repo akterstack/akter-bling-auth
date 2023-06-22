@@ -10,5 +10,6 @@
     "noImplicitAny": false,
     "strictPropertyInitialization": false,
     "skipLibCheck": true
-  }
+  },
+  "ts-node": { "files": true }
 }

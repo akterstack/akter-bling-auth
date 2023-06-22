@@ -1,6 +1,6 @@
 import { Inject, Service } from 'typedi';
 import { MoreThanOrEqual, Repository, Transaction } from 'typeorm';
-import { UserOTP, UserOTPKind } from '../entities/UserOtp';
+import { UserOTP, UserOTPKind } from '../entities/UserOTP';
 import { User } from '../entities/User';
 import { generateOTP } from '../utils/helper';
 

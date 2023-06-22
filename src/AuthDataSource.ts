@@ -4,7 +4,7 @@ import { readDockerSecret } from './utils/helper';
 import Container from 'typedi';
 import { User } from './entities/User';
 import { UserLogin } from './entities/UserLogin';
-import { UserOTP } from './entities/UserOtp';
+import { UserOTP } from './entities/UserOTP';
 
 dotenv.config();
 
