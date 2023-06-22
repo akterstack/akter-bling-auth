@@ -6,10 +6,12 @@ import { DuplicateEntryError } from '../errors/DuplicateEntryError';
 import { generatePasswordHash } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
 import { UserOTP, UserOTPKind } from '../entities/UserOtp';
+import { AuthService } from './AuthService';
 
 @Service()
 export class UserService {
   constructor(
+    @Inject() private authService: AuthService,
     @Inject('AuthDataSource') private authDataSource: DataSource,
     @Inject('UserRepository') private userRepository: Repository<User>
   ) {}
@@ -41,18 +43,37 @@ export class UserService {
       const user = await tx.save(userToCreate);
       await tx.save(userLogin);
 
-      const emailVerificationOtp = new UserOTP(
-        user,
-        UserOTPKind.email_verification
-      );
-      await tx.save(emailVerificationOtp);
-
-      const phoneVerificationOtp = new UserOTP(
-        user,
-        UserOTPKind.phone_verification
-      );
-      await tx.save(phoneVerificationOtp);
+      await Promise.all([
+        this.authService.createOtp(
+          user,
+          UserOTPKind.EMAIL,
+          async (emailVerificationOtp) => {
+            return tx.save(emailVerificationOtp);
+          }
+        ),
+        this.authService.createOtp(
+          user,
+          UserOTPKind.PHONE,
+          async (phoneVerificationOtp) => {
+            return tx.save(phoneVerificationOtp);
+          }
+        ),
+      ]);
       return user;
     });
+  }
+
+  markEmailVerified(userId: number) {
+    return this.userRepository.update(
+      { id: userId },
+      { isEmailVerified: true }
+    );
+  }
+
+  markPhoneVerified(userId: number) {
+    return this.userRepository.update(
+      { id: userId },
+      { isPhoneVerified: true }
+    );
   }
 }

@@ -1,23 +1,32 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { DBTables } from '../constants/DBTables';
-import { AbstractEntity } from './AbstractEntity';
 import { User } from './User';
 import { generateOTP } from '../utils/helper';
 
 export enum UserOTPKind {
-  login_verification,
-  phone_verification,
-  email_verification,
+  LOGIN = 'login',
+  PHONE = 'phone',
+  EMAIL = 'email',
 }
 
 @Entity(DBTables.USER_OTP)
-export class UserOTP extends AbstractEntity<UserOTP> {
+export class UserOTP {
   constructor(user: User, kind: UserOTPKind) {
-    super();
     this.user = user;
     this.kind = kind;
     this.otp = generateOTP();
   }
+
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
   @Index()
@@ -26,13 +35,16 @@ export class UserOTP extends AbstractEntity<UserOTP> {
   @Column({ length: 6 })
   otp: string;
 
+  @Index()
+  @CreateDateColumn()
+  createdAt: Date;
+
   @JoinColumn()
   @ManyToOne(() => User)
   user: User;
 
   toResponseObject(): Partial<UserOTP> {
     return {
-      id: this.id,
       kind: this.kind,
       otp: this.otp,
       createdAt: this.createdAt,
