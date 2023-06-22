@@ -12,6 +12,9 @@ export class UserController {
   async createUser(req: Request, res: Response, next: NextFunction) {
     const userInput = plainToInstance(UserCreateInput, req.body);
     await validate(userInput);
-    res.json((await this.userService.createUser(userInput)).toResponseObject());
+    await this.userService.createUser(userInput);
+    res.status(201).json({
+      success: true,
+    });
   }
 }
