@@ -1,10 +1,10 @@
 import { Entity, Column, JoinColumn, OneToOne } from 'typeorm';
-import { AbstractEntity } from './AbstractEntity';
+import { BaseEntity } from './BaseEntity';
 import { DBTables } from '../constants/DBTables';
 import { UserLogin } from './UserLogin';
 
 @Entity(DBTables.USERS)
-export class User extends AbstractEntity<User> {
+export class User extends BaseEntity<User> {
   @Column()
   firstName: string;
 

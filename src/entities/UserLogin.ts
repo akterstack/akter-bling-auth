@@ -1,23 +1,21 @@
-import { Entity, OneToOne } from 'typeorm';
-import { AbstractEntity } from './AbstractEntity';
+import { Column, Entity, Index, OneToOne } from 'typeorm';
+import { BaseEntity } from './BaseEntity';
 import { DBTables } from '../constants/DBTables';
 import { IsNotEmpty, Max, Min } from 'class-validator';
 
 @Entity(DBTables.USER_LOGINS)
-export class UserLogin extends AbstractEntity<UserLogin> {
-  @Min(3)
-  @Max(20)
-  @IsNotEmpty()
+export class UserLogin extends BaseEntity<UserLogin> {
+  @Index()
+  @Column()
   username: string;
 
-  @IsNotEmpty()
+  @Column()
   password: string;
 
   toResponseObject(): Partial<UserLogin> {
     return {
       id: this.id,
       username: this.username,
-      password: this.password,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };
