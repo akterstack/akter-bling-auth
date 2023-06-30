@@ -40,4 +40,5 @@ export const AuthDataSource = getAuthDataSource();
 
 Container.set('AuthDataSource', AuthDataSource);
 Container.set('UserRepository', AuthDataSource.getRepository(User));
+Container.set('UserLoginRepository', AuthDataSource.getRepository(UserLogin));
 Container.set('UserOtpRepository', AuthDataSource.getRepository(UserOTP));

@@ -1,7 +1,6 @@
-import { Entity, Column, JoinColumn, OneToOne } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 import { DBTables } from '../constants/DBTables';
-import { UserLogin } from './UserLogin';
 
 @Entity(DBTables.USERS)
 export class User extends BaseEntity<User> {
@@ -22,10 +21,6 @@ export class User extends BaseEntity<User> {
 
   @Column()
   isPhoneVerified: boolean = false;
-
-  @JoinColumn()
-  @OneToOne(() => UserLogin)
-  loginDetail: Promise<UserLogin>;
 
   toResponseObject(): Partial<User> {
     return {

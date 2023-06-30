@@ -5,7 +5,7 @@ import app from "./app";
 
 dotenv.config();
 
-const PORT = Number(process.env.APP_PORT) || 3000;
+const PORT = Number(process.env.APP_PORT) || 3030;
 
 AuthDataSource.initialize()
   .then(async () => {

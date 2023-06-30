@@ -27,13 +27,13 @@ app.post(
 app.patch(
   '/verify-email',
   verifySessionId,
-  captureError(userController.verifyEmail.bind(authController))
+  captureError(authController.verifyEmail.bind(authController))
 );
 
 app.patch(
   '/verify-phone',
   verifySessionId,
-  captureError(userController.verifyPhone.bind(authController))
+  captureError(authController.verifyPhone.bind(authController))
 );
 
 app.all('*', notFoundHandler);

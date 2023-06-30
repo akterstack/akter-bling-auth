@@ -33,14 +33,14 @@ export class UserService {
       );
     }
 
-    const userLogin = new UserLogin();
-    userLogin.username = userToCreate.email;
-    userLogin.password = await generatePasswordHash(userInput.password);
-
-    userToCreate.loginDetail = Promise.resolve(userLogin);
-
     return this.authDataSource.manager.transaction(async (tx) => {
       const user = await tx.save(userToCreate);
+
+      const userLogin = new UserLogin();
+      userLogin.username = userToCreate.email;
+      userLogin.password = await generatePasswordHash(userInput.password);
+      userLogin.user = Promise.resolve(user);
+
       await tx.save(userLogin);
 
       await Promise.all([

@@ -1,7 +1,7 @@
-import { Column, Entity, Index, OneToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToOne } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 import { DBTables } from '../constants/DBTables';
-import { IsNotEmpty, Max, Min } from 'class-validator';
+import { User } from './User';
 
 @Entity(DBTables.USER_LOGINS)
 export class UserLogin extends BaseEntity<UserLogin> {
@@ -11,6 +11,10 @@ export class UserLogin extends BaseEntity<UserLogin> {
 
   @Column()
   password: string;
+
+  @JoinColumn()
+  @OneToOne(() => User, (user) => user.id)
+  user: Promise<User>;
 
   toResponseObject(): Partial<UserLogin> {
     return {

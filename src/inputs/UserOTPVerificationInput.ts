@@ -1,9 +1,8 @@
 import { IsNotEmpty, IsNumber, IsNumberString, Length } from 'class-validator';
 
 export class UserOTPVerificationInput {
-  @IsNumber()
   @IsNotEmpty()
-  userId: number;
+  sessionId: string;
 
   @IsNumberString()
   @Length(6)

@@ -1,14 +1,17 @@
 import { Inject, Service } from 'typedi';
-import { MoreThanOrEqual, Repository, Transaction } from 'typeorm';
+import { Repository } from 'typeorm';
 import { UserOTP, UserOTPKind } from '../entities/UserOTP';
 import { User } from '../entities/User';
 import { generateOTP } from '../utils/helper';
+import { UserLogin } from '../entities/UserLogin';
 
 const OTP_TTL_MINUTES = 3; // 3 minutes expiry
 
 @Service()
 export class AuthService {
   constructor(
+    @Inject('UserLoginRepository')
+    private userLoginRepository: Repository<UserLogin>,
     @Inject('UserOtpRepository') private userOtpRepository: Repository<UserOTP>
   ) {}
 
@@ -33,6 +36,15 @@ export class AuthService {
       return txBlock(existingOtp);
     }
     return this.userOtpRepository.save(existingOtp);
+  }
+
+  async getUserFromSession(username: string) {
+    const userLogin = await this.userLoginRepository.findOne({
+      where: {
+        username: username,
+      },
+    });
+    return userLogin?.user;
   }
 
   async verifyOtp(userId: number, otp: string, kind: UserOTPKind) {
