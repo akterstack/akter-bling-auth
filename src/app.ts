@@ -24,6 +24,8 @@ app.post(
   captureError(userController.createUser.bind(userController))
 );
 
+app.get('/otp', captureError(authController.fetchOtp.bind(authController)));
+
 app.patch(
   '/verify-email',
   verifySessionId,

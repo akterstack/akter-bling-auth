@@ -8,5 +8,6 @@ export class HttpValidationError extends HttpError {
       httpStatus.BAD_REQUEST,
       errors.flatMap((e) => Object.values(e?.constraints || {}))
     );
+    Object.setPrototypeOf(this, HttpValidationError.prototype);
   }
 }

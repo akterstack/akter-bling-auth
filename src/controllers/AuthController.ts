@@ -6,6 +6,9 @@ import { UserOTPVerificationInput } from '../inputs/UserOTPVerificationInput';
 import { AuthService } from '../services/AuthService';
 import { UserOTPKind } from '../entities/UserOTP';
 import { UserService } from '../services/UserService';
+import { HttpError } from '../errors/HttpError';
+import httpStatus from 'http-status';
+import { UserOTPGetInput } from '../inputs/UserOTPGetInput';
 
 @Service()
 export class AuthController {
@@ -78,5 +81,22 @@ export class AuthController {
     res.status(401).json({
       success: false,
     });
+  }
+
+  /* 
+  This is a temporary unsecured api just to avoid SMS service integration.
+  For mocking the OTP verification SMS, you should hit `/otp?username=$username`
+  */
+  async fetchOtp(req: Request, res: Response) {
+    const input = plainToInstance(UserOTPGetInput, req.query);
+    await validate(input);
+    if (!req.query.username) {
+      throw new HttpError(httpStatus.BAD_REQUEST, [
+        `Required query param not found: 'username'`,
+      ]);
+    }
+
+    const otp = await this.authService.getOtp(input.username);
+    res.status(200).json(otp);
   }
 }

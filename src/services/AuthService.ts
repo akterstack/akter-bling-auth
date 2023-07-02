@@ -1,7 +1,6 @@
 import { Inject, Service } from 'typedi';
 import { Repository } from 'typeorm';
 import { UserOTP, UserOTPKind } from '../entities/UserOTP';
-import { User } from '../entities/User';
 import { generateOTP } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
 
@@ -16,12 +15,12 @@ export class AuthService {
   ) {}
 
   async createOtp(
-    user: User,
+    user: UserLogin,
     kind: UserOTPKind,
     txBlock?: (userOtp: UserOTP) => Promise<UserOTP>
   ) {
     let existingOtp: UserOTP | null = await this.userOtpRepository.findOneBy({
-      user: {
+      userLogin: {
         id: user.id,
       },
       kind: kind,
@@ -38,6 +37,16 @@ export class AuthService {
     return this.userOtpRepository.save(existingOtp);
   }
 
+  getOtp(username: string) {
+    return this.userOtpRepository
+      .createQueryBuilder('userOtp')
+      .leftJoinAndSelect('userOtp.userLogin', 'userLogin')
+      .where('userOtp.kind = "phone" AND userLogin.username = :username', {
+        username,
+      })
+      .getOne();
+  }
+
   async getUserFromSession(username: string) {
     const userLogin = await this.userLoginRepository.findOne({
       where: {
@@ -51,7 +60,7 @@ export class AuthService {
     const curDateTime = new Date();
     const existingOtp = await this.userOtpRepository.findOne({
       where: {
-        user: {
+        userLogin: {
           id: userId,
         },
         kind: kind,

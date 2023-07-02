@@ -5,5 +5,6 @@ export class HttpError extends Error {
     readonly originalError?: Error
   ) {
     super(originalError?.message);
+    Object.setPrototypeOf(this, HttpError.prototype);
   }
 }

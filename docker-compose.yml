@@ -30,7 +30,7 @@ services:
       - akter-bling-auth
 
   mysql:
-    image: mysql:8
+    image: mysql
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
       MYSQL_DATABASE: bling_auth
@@ -40,7 +40,7 @@ services:
       - db_root_password
       - db_password
     volumes:
-      - db:/var/lib/mysql
+      - mysql_db:/var/lib/mysqldb
     networks:
       - akter-bling-auth
     ports:
@@ -57,7 +57,7 @@ secrets:
     file: secrets/jwt_session_secret
 
 volumes:
-  db:
+  mysql_db:
 
 networks:
   akter-bling-auth:

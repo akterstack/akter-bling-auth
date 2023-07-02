@@ -5,7 +5,7 @@ import { UserCreateInput } from '../inputs/UserCreateInput';
 import { DuplicateEntryError } from '../errors/DuplicateEntryError';
 import { generatePasswordHash } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
-import { UserOTP, UserOTPKind } from '../entities/UserOTP';
+import { UserOTPKind } from '../entities/UserOTP';
 import { AuthService } from './AuthService';
 
 @Service()
@@ -36,23 +36,25 @@ export class UserService {
     return this.authDataSource.manager.transaction(async (tx) => {
       const user = await tx.save(userToCreate);
 
-      const userLogin = new UserLogin();
-      userLogin.username = userToCreate.email;
-      userLogin.password = await generatePasswordHash(userInput.password);
-      userLogin.user = Promise.resolve(user);
+      const userLoginToCreate = new UserLogin();
+      userLoginToCreate.username = userToCreate.email;
+      userLoginToCreate.password = await generatePasswordHash(
+        userInput.password
+      );
+      userLoginToCreate.user = Promise.resolve(user);
 
-      await tx.save(userLogin);
+      const userLogin = await tx.save(userLoginToCreate);
 
       await Promise.all([
         this.authService.createOtp(
-          user,
+          userLogin,
           UserOTPKind.EMAIL,
           async (emailVerificationOtp) => {
             return tx.save(emailVerificationOtp);
           }
         ),
         this.authService.createOtp(
-          user,
+          userLogin,
           UserOTPKind.PHONE,
           async (phoneVerificationOtp) => {
             return tx.save(phoneVerificationOtp);

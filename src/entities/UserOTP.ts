@@ -10,6 +10,7 @@ import {
 import { DBTables } from '../constants/DBTables';
 import { User } from './User';
 import { generateOTP } from '../utils/helper';
+import { UserLogin } from './UserLogin';
 
 export enum UserOTPKind {
   LOGIN = 'login',
@@ -19,8 +20,8 @@ export enum UserOTPKind {
 
 @Entity(DBTables.USER_OTP)
 export class UserOTP {
-  constructor(user: User, kind: UserOTPKind) {
-    this.user = user;
+  constructor(userLogin: UserLogin, kind: UserOTPKind) {
+    this.userLogin = Promise.resolve(userLogin);
     this.kind = kind;
     this.otp = generateOTP();
   }
@@ -40,8 +41,8 @@ export class UserOTP {
   createdAt: Date;
 
   @JoinColumn()
-  @ManyToOne(() => User)
-  user: User;
+  @ManyToOne(() => UserLogin)
+  userLogin: Promise<UserLogin>;
 
   toResponseObject(): Partial<UserOTP> {
     return {
