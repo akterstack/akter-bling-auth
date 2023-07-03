@@ -1,0 +1,250 @@
+{
+	"info": {
+		"_postman_id": "185767a8-321c-49fe-a45c-e7f8a6d8a254",
+		"name": "bling",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12566093",
+		"_collection_link": "https://tuktukdev.postman.co/workspace/Bling---coding-challenge~e8389491-1ed9-4c43-aec9-5e098833509b/collection/12566093-185767a8-321c-49fe-a45c-e7f8a6d8a254?action=share&creator=12566093&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Get OTP",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3030/otp?username=moh.kha2@gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"otp"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "moh.kha2@gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Mohasena\",\n    \"lastName\": \"Khatun\",\n    \"email\": \"moh.kha2@gmail.com\",\n    \"phone\": \"+4915134846232\",\n    \"password\": \"Test123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Phone",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sessionId\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInVzZXJuYW1lIjoibW9oLmtoYTJAZ21haWwuY29tIiwiaWF0IjoxNjg4NDAwMjA1LCJleHAiOjE2ODg0MDAzODV9.KXi7_IzMrSJIUmXxNS9vz31FY29_R4wev2RO71we7QM\",\n    \"otp\": \"234701\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/verify-phone",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"verify-phone"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"akterstack+2@gmail.com\",\n    \"password\": \"Test123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Login",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"sessionId\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoiYWt0ZXJzdGFjaysyQGdtYWlsLmNvbSIsImlhdCI6MTY4ODM5MDkwMywiZXhwIjoxNjg4MzkxMDgzfQ.Bf6WV0Gii--y6aORjdq93UElnPUQFSzgRyt41JNT80k\",\n    \"otp\": \"032260\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/verify-login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"verify-login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsInVzZXJuYW1lIjoibW9oLmtoYTJAZ21haWwuY29tIiwiaWF0IjoxNjg4NDAwMjMwLCJleHAiOjE2ODg0ODY2MzB9.Rp_v5O1rVzd2nDkk9ggXPrKNR8V9vHSXcRCZOZSTJ0g",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"moh.kha3@gmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request Password Change",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoiYWt0ZXJzdGFjaysyQGdtYWlsLmNvbSIsImlhdCI6MTY4ODM5NjUzMCwiZXhwIjoxNjg4NDgyOTMwfQ.GdsfUdSb-S5Nsy4nLluBxPS59RZbVfhEPlGnQKMpt_g",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": \"Qwer1234!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/request-password-change",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"request-password-change"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Password Change",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoiYWt0ZXJzdGFjaysyQGdtYWlsLmNvbSIsImlhdCI6MTY4ODM5NjUzMCwiZXhwIjoxNjg4NDgyOTMwfQ.GdsfUdSb-S5Nsy4nLluBxPS59RZbVfhEPlGnQKMpt_g",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"otp\": \"853415\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3030/verify-password-change",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3030",
+					"path": [
+						"verify-password-change"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
