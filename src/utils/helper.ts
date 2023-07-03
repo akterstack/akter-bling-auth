@@ -52,11 +52,11 @@ export const getSessionIdSecret = () => {
   return process.env.SESSION_ID_SECRET || '';
 };
 
-export const getAuthTokenSecret = () => {
-  if (!process.env.AUTH_TOKEN_SECRET) {
-    throw new Error(`AUTH_TOKEN_SECRET env not found.`);
+export const getAccessTokenSecret = () => {
+  if (!process.env.ACCESS_TOKEN_SECRET) {
+    throw new Error(`ACCESS_TOKEN_SECRET env not found.`);
   }
-  return process.env.AUTH_TOKEN_SECRET || '';
+  return process.env.ACCESS_TOKEN_SECRET || '';
 };
 
 export const generateSessionId = (username: string) => {
@@ -74,7 +74,7 @@ export const generateAccessToken = (username: string) => {
     {
       username,
     },
-    getAuthTokenSecret(),
+    getAccessTokenSecret(),
     { expiresIn: 3 * 60 }
   );
 };
