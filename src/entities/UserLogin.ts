@@ -12,7 +12,7 @@ export class UserLogin extends BaseEntity<UserLogin> {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   nextPassword: string;
 
   @JoinColumn()

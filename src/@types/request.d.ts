@@ -1,6 +1,6 @@
 declare namespace Express {
   export interface Request {
-    authCtx?: {
+    authCtx: {
       userId: number;
       username: string;
     };

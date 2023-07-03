@@ -24,38 +24,9 @@ export class AuthController {
     @Inject() private userService: UserService
   ) {}
 
-  async verifyPhone(req: Request, res: Response) {
-    const otpInput = plainToInstance(UserOTPVerificationInput, req.body);
-    await validate(otpInput);
-
-    if (!req.authCtx?.username) {
-      throw new Error(`Username is missing in session id.`);
-    }
-
-    const user = await this.authService.getUserFromSession(
-      req.authCtx.username
-    );
-
-    if (!user) {
-      throw new Error(`User not found for username: '${req.authCtx.username}'`);
-    }
-
-    const verified = await this.authService.verifyOtp(user.id, otpInput.otp);
-    if (verified) {
-      await this.userService.markPhoneVerified(user.id);
-      res.status(httpStatus.OK).json({
-        success: true,
-      });
-      return;
-    }
-    res.status(httpStatus.UNAUTHORIZED).json({
-      success: false,
-    });
-  }
-
   /* 
   This is a temporary unsecured api just to avoid SMS service integration.
-  For mocking the OTP verification SMS, you should hit `/otp?username=$username`
+  For mocking the OTP verification SMS, you should hit `/otp?username=$email`
   */
   async fetchOtp(req: Request, res: Response) {
     const input = plainToInstance(UserOTPGetInput, req.query);
@@ -69,6 +40,35 @@ export class AuthController {
     const userOtp = await this.authService.getOtp(input.username);
     res.status(httpStatus.OK).json({
       otp: userOtp?.otp,
+    });
+  }
+
+  async verifyPhone(req: Request, res: Response) {
+    const otpInput = plainToInstance(UserOTPVerificationInput, req.body);
+    await validate(otpInput);
+
+    const verified = await this.authService.verifyOtp(
+      req.authCtx.userId,
+      otpInput.otp
+    );
+    if (verified) {
+      await this.userService.markPhoneVerified(req.authCtx.userId);
+      res.status(httpStatus.OK).json({
+        success: true,
+        /**
+         * Ideally we should send access token when email and phone both are verified.
+         * Since the email verification is out of scope of this task, I decided to send
+         * access token after phone verification so that user can be logged in after registration.
+         */
+        accessToken: generateAccessToken(
+          req.authCtx.userId,
+          req.authCtx.username
+        ),
+      });
+      return;
+    }
+    res.status(httpStatus.UNAUTHORIZED).json({
+      success: false,
     });
   }
 
@@ -115,19 +115,10 @@ export class AuthController {
     const otpInput = plainToInstance(UserOTPVerificationInput, req.body);
     await validate(otpInput);
 
-    if (!req.authCtx?.username) {
-      throw new Error(`Username is missing in session id.`);
-    }
-
-    const user = await this.authService.getUserFromSession(
-      req.authCtx.username
+    const verified = await this.authService.verifyOtp(
+      req.authCtx.userId,
+      otpInput.otp
     );
-
-    if (!user) {
-      throw new Error(`User not found for username: '${req.authCtx.username}'`);
-    }
-
-    const verified = await this.authService.verifyOtp(user.id, otpInput.otp);
     if (verified) {
       res.status(httpStatus.OK).json({
         success: true,
@@ -144,10 +135,6 @@ export class AuthController {
   }
 
   async requestPasswordChange(req: Request, res: Response) {
-    if (!req.authCtx) {
-      throw new Error(`Auth context not found.`);
-    }
-
     const userInput = plainToInstance(PasswordChangeInput, req.body);
     await validate(userInput);
     await this.authService.updateNextPassword(
@@ -161,10 +148,6 @@ export class AuthController {
   }
 
   async verifyPasswordChange(req: Request, res: Response) {
-    if (!req.authCtx) {
-      throw new Error(`Auth context not found.`);
-    }
-
     const otpInput = plainToInstance(PasswordChangeVerificationInput, req.body);
     await validate(otpInput);
 

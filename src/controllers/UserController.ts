@@ -18,14 +18,11 @@ export class UserController {
     res.status(httpStatus.CREATED).json({
       success: true,
       sessionId: generateSessionId(user.id, user.email),
+      __next: 'VERIFY_PHONE',
     });
   }
 
   async updateUser(req: Request, res: Response) {
-    if (!req.authCtx) {
-      throw new Error(`Auth context not found.`);
-    }
-
     const userInput = plainToInstance(UserUpdateInput, req.body);
     await validate(userInput);
     await this.userService.updateUser(req.authCtx.userId, userInput);

@@ -76,21 +76,14 @@ export class AuthService {
       .getOne();
   }
 
-  async getUserFromSession(username: string) {
-    const userLogin = await this.userLoginRepository.findOne({
-      where: {
-        username: username,
-      },
-    });
-    return userLogin?.user;
-  }
-
   async verifyOtp(userId: number, otp: string) {
     const curDateTime = new Date();
     const existingOtp = await this.userOtpRepository.findOne({
       where: {
         userLogin: {
-          id: userId,
+          user: {
+            id: userId,
+          },
         },
       },
     });
@@ -103,7 +96,7 @@ export class AuthService {
     const validUntil = new Date(existingOtp.createdAt);
     validUntil.setMinutes(validUntil.getMinutes() + OTP_TTL_MINUTES);
 
-    return existingOtp.otp === otp && curDateTime < validUntil;
+    return existingOtp.otp === otp && curDateTime <= validUntil;
   }
 
   async updateNextPassword(userId: number, password: string) {
