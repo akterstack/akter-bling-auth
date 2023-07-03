@@ -6,6 +6,7 @@ import { DuplicateEntryError } from '../errors/DuplicateEntryError';
 import { generatePasswordHash } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
 import { AuthService } from './AuthService';
+import { UserUpdateInput } from '../inputs/UserUpdateInput';
 
 @Service()
 export class UserService {
@@ -56,17 +57,21 @@ export class UserService {
     });
   }
 
-  markEmailVerified(userId: number) {
-    return this.userRepository.update(
-      { id: userId },
-      { isEmailVerified: true }
-    );
-  }
-
   markPhoneVerified(userId: number) {
     return this.userRepository.update(
       { id: userId },
       { isPhoneVerified: true }
+    );
+  }
+
+  updateUser(userId: number, userUpdateInput: UserUpdateInput) {
+    return this.userRepository.update(
+      { id: userId },
+      {
+        firstName: userUpdateInput.firstName,
+        lastName: userUpdateInput.lastName,
+        email: userUpdateInput.email,
+      }
     );
   }
 }

@@ -35,7 +35,7 @@ export class AuthService {
       throw new UserPasswordMatchesError(loginInput.username);
     }
     await this.createOtp(existingUserLogin);
-    return true;
+    return existingUserLogin;
   }
 
   /**

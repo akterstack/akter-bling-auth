@@ -5,6 +5,7 @@ import express, { Express } from 'express';
 import {
   notFoundHandler,
   serverErrorHandler,
+  verifyAccessToken,
   verifySessionId,
 } from './utils/middlewares';
 import { UserController } from './controllers/UserController';
@@ -24,6 +25,12 @@ app.post(
   captureError(userController.createUser.bind(userController))
 );
 
+app.put(
+  '/users',
+  verifyAccessToken,
+  captureError(userController.updateUser.bind(userController))
+);
+
 app.get('/otp', captureError(authController.fetchOtp.bind(authController)));
 
 app.patch(
@@ -32,7 +39,7 @@ app.patch(
   captureError(authController.verifyPhone.bind(authController))
 );
 
-app.post('/login', captureError(authController.login.bind(authController)));
+app.patch('/login', captureError(authController.login.bind(authController)));
 
 app.patch(
   '/verify-login',

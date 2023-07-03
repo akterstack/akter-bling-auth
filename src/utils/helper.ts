@@ -59,9 +59,10 @@ export const getAccessTokenSecret = () => {
   return process.env.ACCESS_TOKEN_SECRET || '';
 };
 
-export const generateSessionId = (username: string) => {
+export const generateSessionId = (userId: number, username: string) => {
   return jwt.sign(
     {
+      userId,
       username,
     },
     getSessionIdSecret(),
@@ -69,13 +70,14 @@ export const generateSessionId = (username: string) => {
   );
 };
 
-export const generateAccessToken = (username: string) => {
+export const generateAccessToken = (userId: number, username: string) => {
   return jwt.sign(
     {
+      userId,
       username,
     },
     getAccessTokenSecret(),
-    { expiresIn: 3 * 60 }
+    { expiresIn: 24 * 60 * 60 }
   );
 };
 

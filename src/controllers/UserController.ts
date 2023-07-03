@@ -4,15 +4,12 @@ import { Request, Response } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { UserCreateInput } from '../inputs/UserCreateInput';
 import { generateSessionId, validate } from '../utils/helper';
-import { AuthService } from '../services/AuthService';
 import httpStatus from 'http-status';
+import { UserUpdateInput } from '../inputs/UserUpdateInput';
 
 @Service()
 export class UserController {
-  constructor(
-    @Inject() private userService: UserService,
-    @Inject() private authService: AuthService
-  ) {}
+  constructor(@Inject() private userService: UserService) {}
 
   async createUser(req: Request, res: Response) {
     const userInput = plainToInstance(UserCreateInput, req.body);
@@ -20,7 +17,20 @@ export class UserController {
     const user = await this.userService.createUser(userInput);
     res.status(httpStatus.CREATED).json({
       success: true,
-      sessionId: generateSessionId(user.email),
+      sessionId: generateSessionId(user.id, user.email),
+    });
+  }
+
+  async updateUser(req: Request, res: Response) {
+    if (!req.authCtx) {
+      throw new Error(`Auth context not found.`);
+    }
+
+    const userInput = plainToInstance(UserUpdateInput, req.body);
+    await validate(userInput);
+    await this.userService.updateUser(req.authCtx.userId, userInput);
+    res.status(httpStatus.OK).json({
+      success: true,
     });
   }
 }

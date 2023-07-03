@@ -13,6 +13,7 @@ import { HttpError } from '../errors/HttpError';
 import httpStatus from 'http-status';
 import { UserOTPGetInput } from '../inputs/UserOTPGetInput';
 import { UserLoginInput } from '../inputs/UserLoginInput';
+import { UserLogin } from '../entities/UserLogin';
 
 @Service()
 export class AuthController {
@@ -40,7 +41,7 @@ export class AuthController {
     const verified = await this.authService.verifyOtp(user.id, otpInput.otp);
     if (verified) {
       await this.userService.markPhoneVerified(user.id);
-      res.status(httpStatus.ACCEPTED).json({
+      res.status(httpStatus.OK).json({
         success: true,
       });
       return;
@@ -71,8 +72,9 @@ export class AuthController {
     const loginInput = plainToInstance(UserLoginInput, req.body);
     await validate(loginInput);
 
+    let userLogin: UserLogin | undefined = undefined;
     try {
-      await this.authService.verifyPasswordAndCreateOtp(loginInput);
+      userLogin = await this.authService.verifyPasswordAndCreateOtp(loginInput);
     } catch (e) {
       /**
        * We do not send exact reason if login failed.
@@ -84,11 +86,24 @@ export class AuthController {
         success: false,
         message: 'User login failed due to username or password miss match.',
       });
+      return;
     }
 
-    res.status(httpStatus.ACCEPTED).json({
+    if (!userLogin) {
+      res.status(httpStatus.UNAUTHORIZED).json({
+        success: false,
+        message: 'User login failed due to username or password miss match.',
+      });
+      return;
+    }
+
+    res.status(httpStatus.OK).json({
       success: true,
-      sessionId: generateSessionId(loginInput.username),
+      next: 'VERIFY_OTP',
+      sessionId: generateSessionId(
+        (await userLogin.user).id,
+        loginInput.username
+      ),
     });
   }
 
@@ -110,9 +125,12 @@ export class AuthController {
 
     const verified = await this.authService.verifyOtp(user.id, otpInput.otp);
     if (verified) {
-      res.status(httpStatus.ACCEPTED).json({
+      res.status(httpStatus.OK).json({
         success: true,
-        accessToken: generateAccessToken(req.authCtx.username),
+        accessToken: generateAccessToken(
+          req.authCtx.userId,
+          req.authCtx.username
+        ),
       });
       return;
     }
