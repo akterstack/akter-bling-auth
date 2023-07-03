@@ -63,7 +63,9 @@ export const verifySessionId = async (
     req.body.sessionId || req.query.sessionId || req.headers['x-session-id'];
 
   if (!token) {
-    return res.status(403).send('Session ID is required for verification.');
+    return res
+      .status(httpStatus.FORBIDDEN)
+      .send('Session ID is required for verification.');
   }
   try {
     const decoded = await verifyJwtToken<{ username: string }>(
@@ -72,7 +74,7 @@ export const verifySessionId = async (
     );
     req.authCtx = { username: decoded.username };
   } catch (err) {
-    return res.status(401).send('Invalid session.');
+    return res.status(httpStatus.UNAUTHORIZED).send('Invalid session.');
   }
   return next();
 };

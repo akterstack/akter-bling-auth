@@ -1,6 +1,5 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
   Index,
   JoinColumn,
@@ -24,6 +23,7 @@ export class UserOTP {
     this.userLogin = Promise.resolve(userLogin);
     this.kind = kind;
     this.otp = generateOTP();
+    this.createdAt = new Date();
   }
 
   @PrimaryGeneratedColumn()
@@ -36,8 +36,7 @@ export class UserOTP {
   @Column({ length: 6 })
   otp: string;
 
-  @Index()
-  @CreateDateColumn()
+  @Column()
   createdAt: Date;
 
   @JoinColumn()

@@ -38,6 +38,14 @@ app.patch(
   captureError(authController.verifyPhone.bind(authController))
 );
 
+app.post('/login', captureError(authController.login.bind(authController)));
+
+app.patch(
+  '/verify-login',
+  verifySessionId,
+  captureError(authController.verifyLogin.bind(authController))
+);
+
 app.all('*', notFoundHandler);
 
 app.use(serverErrorHandler);

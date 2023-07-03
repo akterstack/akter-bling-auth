@@ -69,6 +69,16 @@ export const generateSessionId = (username: string) => {
   );
 };
 
+export const generateAccessToken = (username: string) => {
+  return jwt.sign(
+    {
+      username,
+    },
+    getAuthTokenSecret(),
+    { expiresIn: 3 * 60 }
+  );
+};
+
 export const verifyJwtToken = <T>(
   token: string,
   secret: string
