@@ -14,6 +14,8 @@ import httpStatus from 'http-status';
 import { UserOTPGetInput } from '../inputs/UserOTPGetInput';
 import { UserLoginInput } from '../inputs/UserLoginInput';
 import { UserLogin } from '../entities/UserLogin';
+import { PasswordChangeInput } from '../inputs/PasswordChangeInput';
+import { PasswordChangeVerificationInput } from '../inputs/PasswordChangeVerificationInput copy';
 
 @Service()
 export class AuthController {
@@ -64,8 +66,10 @@ export class AuthController {
       ]);
     }
 
-    const otp = await this.authService.getOtp(input.username);
-    res.status(httpStatus.OK).json(otp);
+    const userOtp = await this.authService.getOtp(input.username);
+    res.status(httpStatus.OK).json({
+      otp: userOtp?.otp,
+    });
   }
 
   async login(req: Request, res: Response) {
@@ -99,11 +103,11 @@ export class AuthController {
 
     res.status(httpStatus.OK).json({
       success: true,
-      next: 'VERIFY_OTP',
       sessionId: generateSessionId(
         (await userLogin.user).id,
         loginInput.username
       ),
+      __next: 'VERIFY_OTP',
     });
   }
 
@@ -131,6 +135,48 @@ export class AuthController {
           req.authCtx.userId,
           req.authCtx.username
         ),
+      });
+      return;
+    }
+    res.status(httpStatus.UNAUTHORIZED).json({
+      success: false,
+    });
+  }
+
+  async requestPasswordChange(req: Request, res: Response) {
+    if (!req.authCtx) {
+      throw new Error(`Auth context not found.`);
+    }
+
+    const userInput = plainToInstance(PasswordChangeInput, req.body);
+    await validate(userInput);
+    await this.authService.updateNextPassword(
+      req.authCtx.userId,
+      userInput.password
+    );
+    res.status(httpStatus.OK).json({
+      success: true,
+      __next: 'VERIFY_OTP',
+    });
+  }
+
+  async verifyPasswordChange(req: Request, res: Response) {
+    if (!req.authCtx) {
+      throw new Error(`Auth context not found.`);
+    }
+
+    const otpInput = plainToInstance(PasswordChangeVerificationInput, req.body);
+    await validate(otpInput);
+
+    const verified = await this.authService.verifyOtp(
+      req.authCtx.userId,
+      otpInput.otp
+    );
+
+    if (verified) {
+      await this.authService.updatePassword(req.authCtx.userId);
+      res.status(httpStatus.OK).json({
+        success: true,
       });
       return;
     }

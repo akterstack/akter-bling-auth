@@ -1,7 +1,7 @@
 import { Inject, Service } from 'typedi';
 import { Repository } from 'typeorm';
 import { UserOTP } from '../entities/UserOTP';
-import { generateOTP } from '../utils/helper';
+import { generateOTP, generatePasswordHash } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
 import { UserLoginInput } from '../inputs/UserLoginInput';
 import { compare } from 'bcrypt';
@@ -104,5 +104,40 @@ export class AuthService {
     validUntil.setMinutes(validUntil.getMinutes() + OTP_TTL_MINUTES);
 
     return existingOtp.otp === otp && curDateTime < validUntil;
+  }
+
+  async updateNextPassword(userId: number, password: string) {
+    await this.userLoginRepository.update(
+      { user: { id: userId } },
+      {
+        nextPassword: await generatePasswordHash(password),
+      }
+    );
+
+    const userLogin = await this.userLoginRepository.findOneBy({
+      user: { id: userId },
+    });
+
+    await this.createOtp(userLogin!);
+  }
+
+  async updatePassword(userId: number) {
+    const login = await this.userLoginRepository.findOne({
+      where: {
+        user: { id: userId },
+      },
+    });
+
+    if (!login?.nextPassword) {
+      throw new Error('No next password found.');
+    }
+
+    return this.userLoginRepository.update(
+      { user: { id: userId } },
+      {
+        password: login?.nextPassword,
+        nextPassword: '',
+      }
+    );
   }
 }

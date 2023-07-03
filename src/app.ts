@@ -47,6 +47,18 @@ app.patch(
   captureError(authController.verifyLogin.bind(authController))
 );
 
+app.patch(
+  '/request-password-change',
+  verifyAccessToken,
+  captureError(authController.requestPasswordChange.bind(authController))
+);
+
+app.patch(
+  '/verify-password-change',
+  verifyAccessToken,
+  captureError(authController.verifyPasswordChange.bind(authController))
+);
+
 app.all('*', notFoundHandler);
 
 app.use(serverErrorHandler);

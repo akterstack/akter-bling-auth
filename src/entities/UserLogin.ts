@@ -12,6 +12,9 @@ export class UserLogin extends BaseEntity<UserLogin> {
   @Column()
   password: string;
 
+  @Column()
+  nextPassword: string;
+
   @JoinColumn()
   @OneToOne(() => User, (user) => user.id)
   user: Promise<User>;
