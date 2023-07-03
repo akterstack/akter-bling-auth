@@ -5,7 +5,6 @@ import { UserCreateInput } from '../inputs/UserCreateInput';
 import { DuplicateEntryError } from '../errors/DuplicateEntryError';
 import { generatePasswordHash } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
-import { UserOTPKind } from '../entities/UserOTP';
 import { AuthService } from './AuthService';
 
 @Service()
@@ -46,20 +45,12 @@ export class UserService {
       const userLogin = await tx.save(userLoginToCreate);
 
       await Promise.all([
-        this.authService.createOtp(
-          userLogin,
-          UserOTPKind.EMAIL,
-          async (emailVerificationOtp) => {
-            return tx.save(emailVerificationOtp);
-          }
-        ),
-        this.authService.createOtp(
-          userLogin,
-          UserOTPKind.PHONE,
-          async (phoneVerificationOtp) => {
-            return tx.save(phoneVerificationOtp);
-          }
-        ),
+        this.authService.createOtp(userLogin, async (emailVerificationOtp) => {
+          return tx.save(emailVerificationOtp);
+        }),
+        this.authService.createOtp(userLogin, async (phoneVerificationOtp) => {
+          return tx.save(phoneVerificationOtp);
+        }),
       ]);
       return user;
     });

@@ -1,10 +1,11 @@
 import { Inject, Service } from "typedi";
 import { UserService } from "../services/UserService";
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { UserCreateInput } from '../inputs/UserCreateInput';
 import { generateSessionId, validate } from '../utils/helper';
 import { AuthService } from '../services/AuthService';
+import httpStatus from 'http-status';
 
 @Service()
 export class UserController {
@@ -13,11 +14,11 @@ export class UserController {
     @Inject() private authService: AuthService
   ) {}
 
-  async createUser(req: Request, res: Response, next: NextFunction) {
+  async createUser(req: Request, res: Response) {
     const userInput = plainToInstance(UserCreateInput, req.body);
     await validate(userInput);
     const user = await this.userService.createUser(userInput);
-    res.status(201).json({
+    res.status(httpStatus.CREATED).json({
       success: true,
       sessionId: generateSessionId(user.email),
     });

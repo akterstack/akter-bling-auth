@@ -27,12 +27,6 @@ app.post(
 app.get('/otp', captureError(authController.fetchOtp.bind(authController)));
 
 app.patch(
-  '/verify-email',
-  verifySessionId,
-  captureError(authController.verifyEmail.bind(authController))
-);
-
-app.patch(
   '/verify-phone',
   verifySessionId,
   captureError(authController.verifyPhone.bind(authController))

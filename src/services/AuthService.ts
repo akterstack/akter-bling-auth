@@ -1,6 +1,6 @@
 import { Inject, Service } from 'typedi';
 import { Repository } from 'typeorm';
-import { UserOTP, UserOTPKind } from '../entities/UserOTP';
+import { UserOTP } from '../entities/UserOTP';
 import { generateOTP } from '../utils/helper';
 import { UserLogin } from '../entities/UserLogin';
 import { UserLoginInput } from '../inputs/UserLoginInput';
@@ -34,31 +34,28 @@ export class AuthService {
     if (!passwordMatches) {
       throw new UserPasswordMatchesError(loginInput.username);
     }
-    await this.createOtp(existingUserLogin, UserOTPKind.LOGIN);
+    await this.createOtp(existingUserLogin);
     return true;
   }
 
   /**
    * Create a new OTP
    * @param userLogin
-   * @param kind
    * @param txBlock Optional. Transaction callback to create OTP on any existing transaction.
    * @returns
    */
   async createOtp(
     userLogin: UserLogin,
-    kind: UserOTPKind,
     txBlock?: (userOtp: UserOTP) => Promise<UserOTP>
   ) {
     let existingOtp: UserOTP | null = await this.userOtpRepository.findOneBy({
       userLogin: {
         id: userLogin.id,
       },
-      kind: kind,
     });
 
     if (!existingOtp) {
-      existingOtp = new UserOTP(userLogin, kind);
+      existingOtp = new UserOTP(userLogin);
     } else {
       existingOtp.otp = generateOTP();
       existingOtp.createdAt = new Date();
@@ -73,7 +70,7 @@ export class AuthService {
     return this.userOtpRepository
       .createQueryBuilder('userOtp')
       .leftJoinAndSelect('userOtp.userLogin', 'userLogin')
-      .where('userOtp.kind = "phone" AND userLogin.username = :username', {
+      .where('userLogin.username = :username', {
         username,
       })
       .getOne();
@@ -88,21 +85,18 @@ export class AuthService {
     return userLogin?.user;
   }
 
-  async verifyOtp(userId: number, otp: string, kind: UserOTPKind) {
+  async verifyOtp(userId: number, otp: string) {
     const curDateTime = new Date();
     const existingOtp = await this.userOtpRepository.findOne({
       where: {
         userLogin: {
           id: userId,
         },
-        kind: kind,
       },
     });
 
     if (!existingOtp) {
-      console.debug(
-        `Verification OTP does not exist for userId: '${userId}', kind: '${kind}'`
-      );
+      console.debug(`Verification OTP does not exist for userId: '${userId}'`);
       return false;
     }
 
